@@ -1,0 +1,15 @@
+name = "lean-playground"
+
+[[require]]
+name = "mathlib"
+scope = "leanprover-community"
+
+[[lean_lib]]
+name = "nat"
+
+[[lean_lib]]
+name = "add"
+
+[[lean_exe]]
+name = "main"
+
