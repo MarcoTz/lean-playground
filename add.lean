@@ -8,9 +8,11 @@ abbrev Nat.add (n m : Nat) : Nat := Nat.recurse (fun _ sum ↦ succ sum) m n
 instance Nat.instAdd : Add Nat where 
   add := add
 
+@[simp]
 theorem Nat.zero_add (m:Nat): 0 + m = m := by
   apply recurse_zero (fun _ sum ↦ succ sum) _
 
+@[simp]
 theorem Nat.succ_add (n m: Nat):  succ n + m  = succ (n+m) := by rfl
 
 theorem Nat.one_add (m:Nat): 1+m = succ m := by 
@@ -23,6 +25,7 @@ theorem Nat.two_add (m:Nat): 2+m = succ (succ m) := by
 example: (2:Nat) + 3 = 5 := by
   apply Nat.two_add
 
+@[simp]
 lemma Nat.add_zero (m:Nat): m+0 = m := by 
   induction m
   case zero => 
@@ -31,6 +34,7 @@ lemma Nat.add_zero (m:Nat): m+0 = m := by
     rw [Nat.succ_add]
     rw [ha]
 
+@[simp]
 lemma Nat.add_succ (n m: Nat): n + succ m = succ (n+m) := by 
   induction n 
   case zero => 
@@ -43,6 +47,7 @@ lemma Nat.succ_eq_add_one (n: Nat): n + 1 = succ n := by
   change n + succ 0 = succ n
   rw [Nat.add_succ, Nat.add_zero]
 
+@[simp]
 theorem Nat.add_comm (n m : Nat):  n + m = m + n := by 
   induction n 
   case zero => 
@@ -51,6 +56,7 @@ theorem Nat.add_comm (n m : Nat):  n + m = m + n := by
   case succ a ha => 
     rw [Nat.succ_add,Nat.add_succ,ha]
 
+@[simp]
 theorem Nat.add_assoc (a b c: Nat): (a + b) + c = a + (b + c) := by 
   induction a
   case zero => 
@@ -825,6 +831,57 @@ example (a b c d e:Nat) (hab: a ≤ b) (hbc: b < c) (hcd: c ≤ d)
         _ ≤ d := hcd
         _ ≤ e := hde
 
+theorem Nat.lt_squeeze (n m:Nat) (h1: n < m) (h2: m < succ n) : False:=by
+    induction m
+    case zero =>
+      rw [Nat.lt_iff] at h1
+      rcases h1 with ⟨hl,hr⟩
+      rcases hl with ⟨a,ha⟩
+      change 0 = n + a at ha 
+      symm at ha 
+      apply Nat.add_eq_zero at ha 
+      change n ≠ 0 at hr 
+      rcases ha with ⟨h_con,_⟩
+      contradiction
+    case succ m hm => 
+      rw [← Nat.succ_eq_add_one,← Nat.succ_eq_add_one,← Nat.add_lt_add_left m n 1] at h2
+      rw [Nat.lt_iff] at h1 h2 
+      rcases h1 with ⟨h1l,h1r⟩
+      rcases h1l with ⟨a,ha⟩
+      rcases h2 with ⟨h2l,h2r⟩
+      rcases h2l with ⟨b,hb⟩
+      rw [hb,← Nat.succ_eq_add_one,Nat.add_assoc] at ha
+      apply Nat.add_left_cancel at ha 
+      have h:a=1 ∨ b=1 := by 
+        induction a 
+        case zero => 
+          change 1 = b + 0 at ha 
+          rw [Nat.add_zero] at ha 
+          right 
+          symm
+          exact ha 
+        case succ a ha2 =>
+          rw [← Nat.zero_succ] at ha
+          change succ 0 = b + succ a at ha 
+          rw [Nat.add_succ] at ha
+          apply Nat.succ_cancel at ha 
+          symm at ha
+          apply Nat.add_eq_zero at ha 
+          left 
+          rcases ha with ⟨_,ha⟩
+          rw [ha]
+          rfl
+      cases h
+      case inl h =>
+        rw [h] at ha 
+        nth_rw 1 [← Nat.zero_add 1] at ha 
+        apply Nat.add_right_cancel at ha 
+        rw [← ha,Nat.add_zero] at hb
+        symm at hb 
+        contradiction
+      case inr h =>
+        rw [h,Nat.succ_eq_add_one] at hb
+        contradiction
 
 def Nat.ns_mul: _root_.Nat → Nat → Nat 
   | 0,_ => zero
@@ -843,37 +900,46 @@ instance Nat.isOrderedAddMonoid : IsOrderedAddMonoid Nat where
 
 theorem Nat.strong_induction {m₀:Nat} {P: Nat → Prop}
   (hind: ∀ m, m ≥ m₀ → (∀ m', m₀ ≤ m' ∧ m' < m → P m') → P m) :
-    ∀ m, m ≥ m₀ → P m := by
-      intro m1
-      intro hm1
-      induction m1
-      case zero =>
-        apply hind 
-        case _ => 
-          exact hm1
-        case _ =>
-          intro m2
-          intro hm2
-          apply hind 
-          case _ => 
-            by_contra
-            rcases hm2 with ⟨hl,hr⟩
-            have hm2: 0 ≤ m2 := Nat.zero_le m2
-            change m2 < 0 at hr
-            have hm2: m2=0 := by
-              apply Nat.ge_antisymm m2
-              case hab => 
-                rw [Nat.ge_iff_le]
-                exact hm2
-              case hba =>
-                  apply Nat.ge_of_gt
-                  rw [Nat.gt_iff_lt]
-                  exact hr 
-            rw [Nat.lt_iff] at hr 
-            rcases hr with ⟨_,h_con⟩
-            contradiction
-          case _ =>
-            intro 
+    ∀ m, m ≥ m₀ → P m := by sorry
+#check Nat.strong_induction
 
+theorem Nat.backwards_induction {n:Nat} {P:Nat → Prop}
+  (hind: ∀ m, P (succ m) → P m) (hn: P n): 
+    ∀ m, m  ≤ n → P m := by
+      intro m hm 
+      rw [Nat.le_iff] at hm 
+      rcases hm with ⟨a,ha⟩
+      induction a  generalizing m
+      case zero => 
+        change n = m + 0 at ha
+        rw [Nat.add_zero] at ha 
+        rw [← ha]
+        exact hn 
+      case succ a ha_ind =>
+        apply hind
+        rw [Nat.add_succ] at ha 
+        apply ha_ind
+        rw [← Nat.succ_add] at ha 
+        exact ha 
 
+theorem Nat.induction_from {n:Nat} {P:Nat → Prop}
+  (hind:∀ m, P m → P (succ m)): 
+    P n → ∀ m, m ≥ n → P m := by 
+    intro hn m hm
+    rw [Nat.ge_iff_le, Nat.le_iff] at hm 
+    rcases hm with ⟨a,ha⟩
+    induction a generalizing n 
+    case zero =>
+      change m = n + 0 at ha 
+      rw [Nat.add_zero] at ha 
+      rw [ha]
+      exact hn
+    case succ a ha_ind => 
+      rw [Nat.add_succ,← Nat.succ_add] at ha 
+      have hn2 : P (succ n) := by 
+        apply hind
+        exact hn
+      apply ha_ind at hn2
+      apply hn2 at ha
+      exact ha 
 end MyNat
