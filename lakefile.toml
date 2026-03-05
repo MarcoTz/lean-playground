@@ -11,8 +11,10 @@ name = "nat"
 name = "add"
 
 [[lean_lib]]
-name = "mult" 
+name = "mult"
+
+[[lean_lib]]
+name = "nat_equiv"
 
 [[lean_exe]]
 name = "main"
-
