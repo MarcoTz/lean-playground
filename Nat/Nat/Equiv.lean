@@ -1,7 +1,7 @@
 import Mathlib
-import nat
-import mult
-import add
+import Nat.Base
+import Nat.Mult
+import Nat.Add
 
 namespace MyNat
 

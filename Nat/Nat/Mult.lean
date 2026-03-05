@@ -1,6 +1,6 @@
 import Mathlib
-import nat
-import add
+import Nat.Base
+import Nat.Add
 
 namespace MyNat
 

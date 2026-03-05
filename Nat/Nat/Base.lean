@@ -1,7 +1,5 @@
 import Mathlib
-
-namespace MyNat 
-
+namespace MyNat
 
 inductive Nat where 
  | zero : Nat

@@ -1,4 +1,4 @@
-import add 
+import  Nat
 
 def main : IO Unit := 
   IO.println "Hello World"

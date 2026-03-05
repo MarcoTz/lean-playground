@@ -5,16 +5,8 @@ name = "mathlib"
 scope = "leanprover-community"
 
 [[lean_lib]]
-name = "nat"
-
-[[lean_lib]]
-name = "add"
-
-[[lean_lib]]
-name = "mult"
-
-[[lean_lib]]
-name = "nat_equiv"
+name = "Nat"
+srcDir = "Nat"
 
 [[lean_exe]]
 name = "main"

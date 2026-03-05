@@ -1,4 +1,4 @@
-import nat
+import Nat.Base
 
 namespace MyNat
 /-set_option trace.Meta.synthInstance true-/
