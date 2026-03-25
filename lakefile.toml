@@ -1,12 +1,24 @@
 name = "lean-playground"
+leanOptions = [
+  { name = "autoImplicit", value = false },
+]
 
 [[require]]
 name = "mathlib"
 scope = "leanprover-community"
 
+[[require]]
+name = "batteries"
+scope = "leanprover-community"
+rev = "main"
+
 [[lean_lib]]
 name = "Nat"
 srcDir = "Nat"
+
+[[lean_lib]]
+name = "Tapl"
+srcDir = "Tapl"
 
 [[lean_exe]]
 name = "main"
